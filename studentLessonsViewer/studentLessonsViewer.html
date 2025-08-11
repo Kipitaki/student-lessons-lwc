@@ -1,0 +1,128 @@
+<template>
+  <!-- Badges -->
+  <template if:true={badges}>
+    <div class="slds-grid slds-wrap slds-p-bottom_medium">
+      <template for:each={badges} for:item="badge">
+        <div key={badge.id} class="slds-pill slds-m-right_small slds-m-bottom_x-small slds-align_absolute-center">
+          <lightning-icon icon-name={badge.iconName} size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+          <span class="slds-pill__label">{badge.name}</span>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <div class="slds-box slds-theme_default slds-p-around_medium">
+    <div class="slds-page-header slds-page-header_record-home">
+      <div class="slds-page-header__row">
+        <div class="slds-page-header__col-title">
+          <div class="slds-media">
+            <div class="slds-media__figure">
+              <lightning-icon icon-name="standard:education" size="medium"></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <h1 class="slds-page-header__title slds-truncate" title="Student Lessons">Student Lessons</h1>
+              <p class="slds-text-body_small">Upcoming lessons and lesson history for this student.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lessons -->
+    <template if:true={lessons}>
+      <ul class="slds-list_vertical slds-has-dividers_top-space">
+        <template for:each={lessons} for:item="lesson">
+          <li key={lesson.id} class="slds-item slds-p-vertical_small">
+            <article class="slds-card">
+              <div class="slds-card__header slds-grid slds-grid_align-spread slds-p-around_small">
+                <div class="slds-media slds-media_center">
+                  <div class="slds-media__figure">
+                    <lightning-icon icon-name="utility:task" size="small"></lightning-icon>
+                  </div>
+                  <div class="slds-media__body">
+                    <h2 class="slds-card__header-title slds-truncate">{lesson.lessonName}</h2>
+                    <p class="slds-text-body_small">Date: {lesson.lessonDate}</p>
+                  </div>
+                </div>
+
+                <!-- Right side: progress + toggle -->
+                <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-end slds-gutters_x-small">
+                  <span class="slds-badge slds-badge_lightest">
+                    {lesson.completedSteps} / {lesson.totalSteps}
+                  </span>
+                  <template if:true={lesson.completed}>
+                    <span class="slds-badge">
+                      <lightning-icon icon-name="utility:success" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                      Completed
+                    </span>
+                  </template>
+
+                  <div class="slds-no-flex">
+                    <lightning-button
+                      label={lesson.stepButtonLabel}
+                      onclick={toggleSteps}
+                      data-id={lesson.id}
+                      variant="base"
+                      icon-position="right"
+                      icon-name={lesson.iconName}
+                      aria-expanded={lesson.showSteps}>
+                    </lightning-button>
+                  </div>
+                </div>
+              </div>
+
+              <template if:true={lesson.showSteps}>
+                <div class="slds-card__body slds-p-horizontal_medium slds-p-bottom_medium">
+                  <ul class="slds-list_dotted">
+                    <template for:each={lesson.steps} for:item="step">
+                      <li key={step.id} class="slds-p-vertical_x-small slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                        <div>
+                          <p>
+                            <strong>Step {step.stepNumber}:</strong>
+                            <template if:true={step.completed}>
+                              <span class="slds-line-through">{step.instruction}</span>
+                            </template>
+                            <template if:false={step.completed}>
+                              <span>{step.instruction}</span>
+                            </template>
+                          </p>
+                          <p class="slds-text-color_weak slds-text-body_x-small">
+                            Duration: {step.duration} min
+                            <template if:true={step.completed}>
+                              • Completed {step.completedDate}
+                            </template>
+                          </p>
+                        </div>
+
+                        <div class="slds-no-flex">
+                          <lightning-button
+                            variant={step.buttonVariant}
+                            label={step.buttonLabel}
+                            icon-name={step.buttonIconName}
+                            icon-position="left"
+                            onclick={handleCompleteStep}
+                            data-lesson-id={lesson.id}
+                            data-step-id={step.id}
+                            disabled={step.saving}>
+                          </lightning-button>
+                        </div>
+                      </li>
+                    </template>
+                  </ul>
+                </div>
+              </template>
+            </article>
+          </li>
+        </template>
+      </ul>
+    </template>
+
+    <template if:true={error}>
+      <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+        <span class="slds-assistive-text">Error</span>
+        <span class="slds-text-color_inverse">Error loading data. Check console.</span>
+      </div>
+    </template>
+  </div>
+</template>
+
